@@ -37,6 +37,10 @@ const HomeScreen: React.FC = () => {
     router.push('/deposits');
   };
 
+  const handleMovementsPress = () => {
+    router.push('/movements');
+  };
+
   const renderHeader = () => (
     <View style={styles.header}>
       <View style={styles.headerTop}>
@@ -102,7 +106,7 @@ const HomeScreen: React.FC = () => {
           </View>
           <Text style={styles.actionButtonText}>{selectedCurrency === 'dolares' ? 'Transferir' : 'Préstamos'}</Text>
         </Pressable>
-        <Pressable style={[styles.actionButton, styles.purpleButton]}>
+        <Pressable style={[styles.actionButton, styles.purpleButton]} onPress={handleMovementsPress}>
           <View style={[styles.purpleIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
             <Ionicons name="list" size={24} color={Colors.text} />
           </View>
