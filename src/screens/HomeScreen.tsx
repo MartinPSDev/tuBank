@@ -16,6 +16,7 @@ import { Colors } from '../constants/Colors';
 import { Spacing, FontSizes, FontWeights, BorderRadius } from '../constants/Layout';
 import { useBankData } from '../hooks/useBankData';
 import { Transaction, Service, Promotion } from '../types';
+import { useRouter } from 'expo-router';
 
 const HomeScreen: React.FC = () => {
   const {
@@ -28,7 +29,13 @@ const HomeScreen: React.FC = () => {
     getAccountBalance,
   } = useBankData();
 
+  const router = useRouter();
   const [showAccountModal, setShowAccountModal] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<'pesos' | 'dolares'>('pesos');
+
+  const handleDepositPress = () => {
+    router.push('/deposits');
+  };
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -54,43 +61,49 @@ const HomeScreen: React.FC = () => {
 
       <View style={styles.centerContent}>
         <View style={styles.currencyTabs}>
-          <Pressable style={[styles.currencyTab, styles.currencyTabActive]}>
-            <Text style={styles.currencyTabTextActive}>PESOS</Text>
+          <Pressable 
+            style={[styles.currencyTab, selectedCurrency === 'pesos' && styles.currencyTabActive]}
+            onPress={() => setSelectedCurrency('pesos')}
+          >
+            <Text style={selectedCurrency === 'pesos' ? styles.currencyTabTextActive : styles.currencyTabText}>PESOS</Text>
           </Pressable>
-          <Pressable style={styles.currencyTab}>
-            <Text style={styles.currencyTabText}>DÓLARES</Text>
+          <Pressable 
+            style={[styles.currencyTab, selectedCurrency === 'dolares' && styles.currencyTabActiveDollar]}
+            onPress={() => setSelectedCurrency('dolares')}
+          >
+            <Text style={selectedCurrency === 'dolares' ? styles.currencyTabTextActiveDollar : styles.currencyTabText}>DÓLARES</Text>
           </Pressable>
         </View>
 
         <View style={styles.balanceSection}>
-          <Text style={styles.balanceLabel}>Saldo</Text>
-          <Text style={styles.balanceAmount}>
-            ${getAccountBalance('pesos').toFixed(2)}
+          <Text style={[styles.balanceLabel, selectedCurrency === 'dolares' && styles.balanceLabelDollar]}>Saldo</Text>
+          <Text style={[styles.balanceAmount, selectedCurrency === 'dolares' && styles.balanceAmountDollar]}>
+            {selectedCurrency === 'dolares' ? 'USD ' : '$'}{getAccountBalance(selectedCurrency).toFixed(2)}
           </Text>
         </View>
       </View>
 
       <View style={styles.actionButtons}>
         <Pressable style={[styles.actionButton, styles.qrButton]}>
-          <View style={styles.qrIconContainer}>
+          <View style={[styles.qrIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
             <MaterialIcons name="qr-code" size={24} color={Colors.background} />
           </View>
-          <Text style={styles.actionButtonText}>Pago QR</Text>
+          <Text style={styles.actionButtonText}>{selectedCurrency === 'dolares' ? 'Comprar' : 'Pago QR'}</Text>
         </Pressable>
-        <Pressable style={[styles.actionButton, styles.purpleButton]}>
-          <View style={styles.purpleIconContainer}>
-            <Ionicons name="arrow-down" size={24} color={Colors.text} />
+        <Pressable style={[styles.actionButton, styles.purpleButton]} onPress={handleDepositPress}>
+          <View style={[styles.purpleIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
+            <Ionicons name="arrow-up" size={24} color={Colors.text} />
           </View>
-          <Text style={styles.actionButtonText}>Depositar</Text>
+          <Text style={styles.actionButtonText}>{selectedCurrency === 'dolares' ? 'Vender' : 'Depositar'}</Text>
         </Pressable>
         <Pressable style={[styles.actionButton, styles.purpleButton]}>
-          <View style={styles.purpleIconContainer}>
-            <Ionicons name="card" size={24} color={Colors.text} />
+          <View style={[styles.purpleIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
+            <Ionicons name="swap-horizontal" size={24} color={Colors.text} />
           </View>
-          <Text style={styles.actionButtonText}>Préstamos</Text>
+          <Text style={styles.actionButtonText}>{selectedCurrency === 'dolares' ? 'Transferir' : 'Préstamos'}</Text>
         </Pressable>
         <Pressable style={[styles.actionButton, styles.purpleButton]}>
-          <View style={styles.purpleIconContainer}>
+          <View style={[styles.purpleIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
             <Ionicons name="list" size={24} color={Colors.text} />
           </View>
           <Text style={styles.actionButtonText}>Movimientos</Text>
@@ -100,12 +113,12 @@ const HomeScreen: React.FC = () => {
   );
 
   const renderDollarCard = () => (
-    <Pressable style={styles.dollarCard}>
+    <Pressable style={[styles.dollarCard, selectedCurrency === 'dolares' && styles.dollarCardActive]}>
       <View style={styles.dollarCardContent}>
-        <Text style={styles.dollarCardTitle}>VENDÉ DÓLARES</Text>
-        <Text style={styles.dollarCardAmount}>$ 1.220.00</Text>
+        <Text style={[styles.dollarCardTitle, selectedCurrency === 'dolares' && styles.dollarCardTitleActive]}>COMPRÁ DÓLARES</Text>
+        <Text style={[styles.dollarCardAmount, selectedCurrency === 'dolares' && styles.dollarCardAmountActive]}>$ 1.265,00</Text>
       </View>
-      <Ionicons name="chevron-forward" size={20} color={Colors.primary} style={styles.dollarCardIcon} />
+      <Ionicons name="chevron-forward" size={20} color={selectedCurrency === 'dolares' ? '#22C55E' : Colors.primary} style={styles.dollarCardIcon} />
     </Pressable>
   );
 
@@ -919,6 +932,35 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     fontSize: FontSizes.sm,
     textAlign: 'center',
+  },
+  // Dollar mode styles
+  currencyTabActiveDollar: {
+    backgroundColor: '#22C55E',
+  },
+  currencyTabTextActiveDollar: {
+    color: Colors.text,
+    fontSize: FontSizes.sm,
+    fontWeight: FontWeights.medium,
+  },
+  balanceLabelDollar: {
+    color: '#22C55E',
+  },
+  balanceAmountDollar: {
+    color: '#22C55E',
+  },
+  greenIconContainer: {
+    backgroundColor: '#22C55E',
+  },
+  dollarCardActive: {
+    backgroundColor: '#22C55E',
+    borderWidth: 2,
+    borderColor: '#16A34A',
+  },
+  dollarCardTitleActive: {
+    color: Colors.text,
+  },
+  dollarCardAmountActive: {
+    color: Colors.text,
   },
 });
 

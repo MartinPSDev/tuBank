@@ -115,8 +115,9 @@ export const useBankData = () => {
     }, 1000);
   };
 
-  const getAccountBalance = (type: 'pesos' | 'dollars'): number => {
-    const account = accounts.find(acc => acc.type === type);
+  const getAccountBalance = (type: 'pesos' | 'dolares'): number => {
+    const accountType = type === 'dolares' ? 'dollars' : type;
+    const account = accounts.find(acc => acc.type === accountType);
     return account?.balance || 0;
   };
 
