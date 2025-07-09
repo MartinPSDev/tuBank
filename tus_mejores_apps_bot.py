@@ -1,34 +1,29 @@
 import os
 import logging
-import asyncio # <--- CAMBIO: Necesario para manejar operaciones asíncronas en Flask
-import psycopg2 # <--- CAMBIO: La librería para conectar con PostgreSQL
-from urllib.parse import urlparse # <--- CAMBIO: Para parsear la URL de la DB
-from flask import Flask, request # <--- CAMBIO: Importamos Flask
+import asyncio
+import psycopg2
+from urllib.parse import urlparse
+from flask import Flask, request
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 # --- CONFIGURACIÓN ---
-# No usamos dotenv, Render inyecta las variables directamente
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 WEB_APP_URL = os.getenv('TELEGRAM_WEB_APP_URL')
-# <--- CAMBIO: URL de la base de datos de Render
 DATABASE_URL = os.getenv('DATABASE_URL') 
-# <--- CAMBIO: URL de nuestro propio servicio web en Render
 RENDER_WEB_URL = os.getenv('RENDER_WEB_URL')
 
-# Validaciones iniciales
 if not all([BOT_TOKEN, WEB_APP_URL, DATABASE_URL, RENDER_WEB_URL]):
     raise ValueError("Faltan una o más variables de entorno: TELEGRAM_BOT_TOKEN, TELEGRAM_WEB_APP_URL, DATABASE_URL, RENDER_WEB_URL")
 
-# Configurar logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
 
-# --- LÓGICA DE BASE DE DATOS (PostgreSQL) --- <--- CAMBIO: Toda la sección de DB
+# --- LÓGICA DE BASE DE DATOS (PostgreSQL) ---
 
 def get_db_connection():
     """Establece una conexión con la base de datos PostgreSQL."""
@@ -47,7 +42,6 @@ def init_db():
     
     try:
         with conn.cursor() as cursor:
-            # PostgreSQL usa SERIAL para autoincrementar
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS interactions (
                     interaction_id SERIAL PRIMARY KEY,
@@ -67,7 +61,6 @@ def init_db():
                     unique_users_count INTEGER DEFAULT 0
                 )
             ''')
-            # Insertar fila inicial si la tabla está vacía
             cursor.execute('''
                 INSERT INTO bot_stats (id, unique_users_count) VALUES (1, 0)
                 ON CONFLICT (id) DO NOTHING
@@ -87,7 +80,6 @@ def save_user_interaction(user_id: int, first_name: str, last_name: str, usernam
 
     try:
         with conn.cursor() as cursor:
-            # En psycopg2, los placeholders son %s
             sql = '''
                 INSERT INTO interactions (user_id, first_name, last_name, username, language_code, is_bot, interaction_type)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -136,8 +128,7 @@ def increment_unique_users_count():
         conn.close()
 
 
-# --- MANEJADORES DE COMANDOS DEL BOT (sin cambios en su lógica interna) ---
-# La lógica de los comandos sigue siendo la misma, ¡lo cual es genial!
+# --- MANEJADORES DE COMANDOS DEL BOT ---
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.message.from_user
@@ -166,36 +157,25 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(f"Actualmente hay {unique_users} usuarios únicos que han interactuado con el bot.")
 
 
-# --- CONFIGURACIÓN DE FLASK Y TELEGRAM --- <--- CAMBIO RADICAL
+# --- CONFIGURACIÓN DE FLASK Y TELEGRAM ---
 
-# 1. Inicializar la base de datos al arrancar la aplicación
 init_db()
 
-# 2. Configurar la aplicación de Telegram
-# Usamos un `context_types` para evitar warnings.
 context_types = ContextTypes(context=dict)
 application = Application.builder().token(BOT_TOKEN).context_types(context_types).build()
 
-# 3. Registrar los manejadores de comandos
 application.add_handler(CommandHandler("start", start))
 application.add_handler(CommandHandler("stats", stats))
 
-# 4. Crear la aplicación Flask
 app = Flask(__name__)
 
-# 5. Crear el endpoint del webhook
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
 async def webhook():
-    """Esta función se activa cada vez que Telegram envía una actualización."""
     update_data = request.get_json(force=True)
     update = Update.de_json(update_data, application.bot)
-    
-    # El objeto `application` se encargará de llamar al manejador correcto (`start`, `stats`, etc.)
     await application.process_update(update)
-    
     return 'ok', 200
 
-# 6. (Opcional) Una ruta para configurar el webhook fácilmente
 @app.route('/set_webhook')
 def set_webhook_route():
     webhook_url = f'{RENDER_WEB_URL}/{BOT_TOKEN}'
@@ -205,10 +185,6 @@ def set_webhook_route():
     else:
         return "Error al configurar el webhook", 400
 
-# 7. Una ruta raíz para verificar que el servidor está vivo
 @app.route('/')
 def index():
     return "¡El bot está vivo!"
-
-# NOTA: No hay `if __name__ == '__main__':` ni `app.run()`.
-# El servidor Gunicorn que usaremos en Render se encargará de ejecutar la `app` de Flask.
