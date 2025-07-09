@@ -31,7 +31,9 @@ const HomeScreen: React.FC = () => {
 
   const router = useRouter();
   const [showAccountModal, setShowAccountModal] = useState(false);
+  const [showCBUModal, setShowCBUModal] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<'pesos' | 'dolares'>('pesos');
+  const [cbuCurrency, setCbuCurrency] = useState<'pesos' | 'dolares'>('pesos');
 
   const handleDepositPress = () => {
     router.push('/deposits');
@@ -39,6 +41,15 @@ const HomeScreen: React.FC = () => {
 
   const handleMovementsPress = () => {
     router.push('/movements');
+  };
+
+  const handleCBUPress = () => {
+    setShowAccountModal(false);
+    setShowCBUModal(true);
+  };
+
+  const handleInvestmentPress = () => {
+    router.push('/investment');
   };
 
   const renderHeader = () => (
@@ -202,7 +213,7 @@ const HomeScreen: React.FC = () => {
 
   const renderInvestmentSection = () => (
     <View style={styles.investmentSection}>
-      <View style={styles.investmentCard}>
+      <Pressable style={styles.investmentCard} onPress={handleInvestmentPress}>
         <View style={styles.investmentContent}>
           <Text style={styles.investmentTitle}>En rendimiento</Text>
           <Text style={styles.investmentAmount}>$ 33.57</Text>
@@ -211,7 +222,7 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.investmentPerformance}>29,00%</Text>
         </View>
         <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
-      </View>
+      </Pressable>
     </View>
   );
 
@@ -273,6 +284,101 @@ const HomeScreen: React.FC = () => {
     </View>
   );
 
+  const renderCBUModal = () => (
+    <Modal
+      visible={showCBUModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowCBUModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <Pressable 
+          style={styles.modalBackdrop} 
+          onPress={() => setShowCBUModal(false)}
+        />
+        <View style={styles.cbuModal}>
+          <View style={styles.cbuHeader}>
+            <Text style={styles.cbuTitle}>¡Traé tu sueldo a Brubank!</Text>
+            <Text style={styles.cbuSubtitle}>Mirá todos los beneficios que podés obtener.</Text>
+            <View style={styles.percentageIcon}>
+              <Text style={styles.percentageText}>%</Text>
+            </View>
+          </View>
+          
+          <View style={styles.qrSection}>
+            <View style={styles.qrCode}>
+              <View style={styles.qrPattern}>
+                <View style={[styles.qrSquare, styles.qrTopLeft]} />
+                <View style={[styles.qrSquare, styles.qrTopRight]} />
+                <View style={[styles.qrSquare, styles.qrBottomLeft]} />
+                <View style={styles.qrCenter}>
+                  <Text style={styles.qrCenterText}>b</Text>
+                </View>
+              </View>
+            </View>
+            
+            <Text style={styles.userName}>Martin Raul Perez Sotelo</Text>
+            <Text style={styles.shareText}>Compartí tu QR para que te envíen dinero a tu cuenta</Text>
+            
+            <View style={styles.currencySelector}>
+              <Pressable 
+                style={[styles.currencyOption, cbuCurrency === 'pesos' && styles.currencyOptionActive]}
+                onPress={() => setCbuCurrency('pesos')}
+              >
+                <Text style={[styles.currencyOptionText, cbuCurrency === 'pesos' && styles.currencyOptionTextActive]}>PESOS</Text>
+              </Pressable>
+              <Pressable 
+                style={[styles.currencyOption, cbuCurrency === 'dolares' && styles.currencyOptionActiveDollar]}
+                onPress={() => setCbuCurrency('dolares')}
+              >
+                <Text style={[styles.currencyOptionText, cbuCurrency === 'dolares' && styles.currencyOptionTextActiveDollar]}>DÓLARES</Text>
+              </Pressable>
+            </View>
+          </View>
+          
+          <View style={styles.accountDetails}>
+            <View style={styles.accountDetailRow}>
+              <Text style={styles.accountDetailLabel}>Mi CBU</Text>
+              <View style={styles.accountDetailActions}>
+                <Ionicons name="copy-outline" size={20} color={Colors.primary} />
+              </View>
+            </View>
+            <Text style={styles.accountDetailValue}>
+              {cbuCurrency === 'pesos' ? '1430001713001153280019' : '1430001714001153280027'}
+            </Text>
+            
+            <View style={styles.accountDetailRow}>
+              <Text style={styles.accountDetailLabel}>Alias</Text>
+              <View style={styles.accountDetailActions}>
+                <Ionicons name="pencil-outline" size={20} color={Colors.primary} />
+                <Ionicons name="copy-outline" size={20} color={Colors.primary} />
+              </View>
+            </View>
+            <Text style={styles.accountDetailValue}>
+              {cbuCurrency === 'pesos' ? 'martinpe.bru' : 'AMIGO.PAMPA.BARCO'}
+            </Text>
+            
+            <View style={styles.accountDetailRow}>
+              <Text style={styles.accountDetailLabel}>Número de cuenta</Text>
+              <View style={styles.accountDetailActions}>
+                <Ionicons name="copy-outline" size={20} color={Colors.primary} />
+              </View>
+            </View>
+            <Text style={styles.accountDetailValue}>
+              {cbuCurrency === 'pesos' ? '1300115328001' : '1400115328002'}
+            </Text>
+            
+            <Pressable style={styles.cbuDetailRow}>
+              <Text style={styles.cbuDetailLabel}>Todos los datos de mi cuenta</Text>
+              <Text style={styles.cbuDetailSubtitle}>Datos bancarios</Text>
+              <Ionicons name="chevron-forward" size={20} color={Colors.primary} />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
   const renderAccountModal = () => (
     <Modal
       visible={showAccountModal}
@@ -311,7 +417,7 @@ const HomeScreen: React.FC = () => {
             </View>
             
             <View style={styles.profileActions}>
-              <Pressable style={styles.aliasButton}>
+              <Pressable style={styles.aliasButton} onPress={handleCBUPress}>
                 <Text style={styles.aliasButtonText}>Mi alias y CBU</Text>
               </Pressable>
               <Pressable style={styles.benefitsButton}>
@@ -395,6 +501,7 @@ const HomeScreen: React.FC = () => {
         <View style={styles.bottomSpacing} />
       </ScrollView>
       {renderAccountModal()}
+      {renderCBUModal()}
     </View>
   );
 };
@@ -965,6 +1072,186 @@ const styles = StyleSheet.create({
   },
   dollarCardAmountActive: {
     color: Colors.text,
+  },
+  // CBU Modal styles
+  cbuModal: {
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: 40,
+    maxHeight: '95%',
+  },
+  cbuHeader: {
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+    position: 'relative',
+  },
+  cbuTitle: {
+    color: Colors.text,
+    fontSize: FontSizes.lg,
+    fontWeight: FontWeights.bold,
+    marginBottom: Spacing.xs,
+  },
+  cbuSubtitle: {
+    color: Colors.text,
+    fontSize: FontSizes.md,
+  },
+  percentageIcon: {
+    position: 'absolute',
+    top: Spacing.lg,
+    right: Spacing.lg,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  percentageText: {
+    color: Colors.text,
+    fontSize: FontSizes.lg,
+    fontWeight: FontWeights.bold,
+  },
+  qrSection: {
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+  },
+  qrCode: {
+    width: 200,
+    height: 200,
+    backgroundColor: Colors.text,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.lg,
+  },
+  qrPattern: {
+    width: 180,
+    height: 180,
+    position: 'relative',
+  },
+  qrSquare: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    backgroundColor: Colors.background,
+  },
+  qrTopLeft: {
+    top: 10,
+    left: 10,
+  },
+  qrTopRight: {
+    top: 10,
+    right: 10,
+  },
+  qrBottomLeft: {
+    bottom: 10,
+    left: 10,
+  },
+  qrCenter: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -15 }, { translateY: -15 }],
+    width: 30,
+    height: 30,
+    backgroundColor: Colors.primary,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  qrCenterText: {
+    color: Colors.text,
+    fontSize: FontSizes.lg,
+    fontWeight: FontWeights.bold,
+  },
+  userName: {
+    color: Colors.text,
+    fontSize: FontSizes.xl,
+    fontWeight: FontWeights.bold,
+    marginBottom: Spacing.sm,
+    textAlign: 'center',
+  },
+  shareText: {
+    color: Colors.textSecondary,
+    fontSize: FontSizes.md,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
+  currencySelector: {
+    flexDirection: 'row',
+    backgroundColor: '#2A2A2A',
+    borderRadius: BorderRadius.lg,
+    padding: 4,
+  },
+  currencyOption: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  currencyOptionActive: {
+    backgroundColor: Colors.primary,
+  },
+  currencyOptionActiveDollar: {
+    backgroundColor: '#22C55E',
+  },
+  currencyOptionText: {
+    color: Colors.textSecondary,
+    fontSize: FontSizes.sm,
+    fontWeight: FontWeights.medium,
+  },
+  currencyOptionTextActive: {
+    color: Colors.text,
+  },
+  currencyOptionTextActiveDollar: {
+    color: Colors.text,
+  },
+  accountDetails: {
+    gap: Spacing.lg,
+  },
+  accountDetailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  accountDetailLabel: {
+    color: Colors.text,
+    fontSize: FontSizes.md,
+    fontWeight: FontWeights.medium,
+  },
+  accountDetailActions: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  accountDetailValue: {
+    color: Colors.textSecondary,
+    fontSize: FontSizes.md,
+    marginBottom: Spacing.md,
+  },
+  cbuDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: '#2A2A2A',
+  },
+  cbuDetailLabel: {
+    flex: 1,
+    color: Colors.text,
+    fontSize: FontSizes.md,
+    fontWeight: FontWeights.medium,
+  },
+  cbuDetailSubtitle: {
+    color: Colors.textSecondary,
+    fontSize: FontSizes.sm,
+    marginRight: Spacing.md,
   },
 });
 
