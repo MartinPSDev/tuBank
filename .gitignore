@@ -37,3 +37,19 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+/venv
+/.venv
+/env
+
+.env
+
+__pycache__/
+*.pyc
+
+.vscode/
+.idea/
+
+dist/
+build/
+*.egg-info
+7fa8e300597db09e3262ce27dc2520714e8da42d
