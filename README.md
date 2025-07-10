@@ -1,6 +1,5 @@
 # TuBank - Tu Banca Móvil
-
-![TuBank Logo](https://via.placeholder.com/150x50?text=TuBank)  
+ 
 *Tu banco en la palma de tu mano*
 
 ## 📱 Acerca de TuBank
