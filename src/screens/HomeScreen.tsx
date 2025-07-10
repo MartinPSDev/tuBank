@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-  Modal,
-  Animated,
-} from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { Colors } from '../constants/Colors';
-import { Spacing, FontSizes, FontWeights, BorderRadius } from '../constants/Layout';
-import { useBankData } from '../hooks/useBankData';
-import { Transaction, Service, Promotion } from '../types';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Animated,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { Colors } from '../constants/Colors';
+import { BorderRadius, FontSizes, FontWeights, Spacing } from '../constants/Layout';
+import { useBankData } from '../hooks/useBankData';
+import { Promotion, Service, Transaction } from '../types';
 
 const HomeScreen: React.FC = () => {
   const {
@@ -35,6 +35,39 @@ const HomeScreen: React.FC = () => {
   const [selectedCurrency, setSelectedCurrency] = useState<'pesos' | 'dolares'>('pesos');
   const [cbuCurrency, setCbuCurrency] = useState<'pesos' | 'dolares'>('pesos');
 
+  const headerAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      Animated.timing(headerAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }).start();
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const [dollarCardState, setDollarCardState] = useState<'comprar' | 'vender'>('comprar');
+  const dollarCardAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDollarCardState(prevState => {
+        const nextState = prevState === 'comprar' ? 'vender' : 'comprar';
+        Animated.timing(dollarCardAnim, {
+          toValue: nextState === 'vender' ? 1 : 0,
+          duration: 1500,
+          useNativeDriver: true,
+        }).start();
+        return nextState;
+      });
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handleDepositPress = () => {
     router.push('/deposits');
   };
@@ -52,6 +85,63 @@ const HomeScreen: React.FC = () => {
     router.push('/investment');
   };
 
+  const userNameStyle = {
+    opacity: headerAnim.interpolate({
+      inputRange: [0, 0.5],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    }),
+    transform: [{
+      translateX: headerAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, -20],
+        extrapolate: 'clamp',
+      }),
+    }],
+  };
+
+  const searchContainerStyle = {
+    opacity: headerAnim.interpolate({
+      inputRange: [0.5, 1],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    }),
+     transform: [{
+      translateX: headerAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [20, 0],
+        extrapolate: 'clamp',
+      }),
+    }],
+  };
+  
+  const comprarDolaresStyle = {
+    opacity: dollarCardAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 0],
+    }),
+    transform: [{
+      translateY: dollarCardAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, -20],
+      }),
+    }],
+  };
+  
+  const venderDolaresStyle = {
+    opacity: dollarCardAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+    }),
+    transform: [{
+      translateY: dollarCardAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [20, 0],
+      }),
+    }],
+  };
+
+  // CAMBIO: Lógica de renderHeader reestructurada para evitar el error de `useNativeDriver`
   const renderHeader = () => (
     <View style={styles.header}>
       <View style={styles.headerTop}>
@@ -67,9 +157,22 @@ const HomeScreen: React.FC = () => {
               <Ionicons name="chevron-down" size={16} color={Colors.text} />
             </Pressable>
           </View>
-          <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color={Colors.textSecondary} />
-            <Text style={styles.searchText}>Buscar</Text>
+          
+          <View style={styles.animatedHeaderContent}>
+            {/* Contenedor para el nombre de usuario */}
+            <View style={styles.userNameWrapper}>
+              <Animated.View style={[styles.animatedElement, userNameStyle]}>
+                <Text style={styles.userNameText}>Martin</Text>
+              </Animated.View>
+            </View>
+
+            {/* Contenedor para la barra de búsqueda */}
+            <View style={styles.searchWrapper}>
+              <Animated.View style={[styles.animatedElement, styles.searchInner, searchContainerStyle]}>
+                <Ionicons name="search" size={18} color={Colors.textSecondary} />
+                <Text style={styles.searchText}>Buscar</Text>
+              </Animated.View>
+            </View>
           </View>
         </View>
       </View>
@@ -99,27 +202,27 @@ const HomeScreen: React.FC = () => {
       </View>
 
       <View style={styles.actionButtons}>
-        <Pressable style={[styles.actionButton, styles.qrButton]}>
+        <Pressable style={styles.actionButton}>
           <View style={[styles.qrIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
-            <MaterialIcons name="qr-code" size={24} color={Colors.background} />
+            <MaterialIcons name="qr-code" size={28} color={Colors.background} />
           </View>
           <Text style={styles.actionButtonText}>{selectedCurrency === 'dolares' ? 'Comprar' : 'Pago QR'}</Text>
         </Pressable>
-        <Pressable style={[styles.actionButton, styles.purpleButton]} onPress={handleDepositPress}>
+        <Pressable style={styles.actionButton} onPress={handleDepositPress}>
           <View style={[styles.purpleIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
-            <Ionicons name="arrow-up" size={24} color={Colors.text} />
+            <Ionicons name="arrow-up" size={28} color={Colors.text} />
           </View>
           <Text style={styles.actionButtonText}>{selectedCurrency === 'dolares' ? 'Vender' : 'Depositar'}</Text>
         </Pressable>
-        <Pressable style={[styles.actionButton, styles.purpleButton]}>
+        <Pressable style={styles.actionButton}>
           <View style={[styles.purpleIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
-            <Ionicons name="swap-horizontal" size={24} color={Colors.text} />
+            <Ionicons name="swap-horizontal" size={28} color={Colors.text} />
           </View>
           <Text style={styles.actionButtonText}>{selectedCurrency === 'dolares' ? 'Transferir' : 'Préstamos'}</Text>
         </Pressable>
-        <Pressable style={[styles.actionButton, styles.purpleButton]} onPress={handleMovementsPress}>
+        <Pressable style={styles.actionButton} onPress={handleMovementsPress}>
           <View style={[styles.purpleIconContainer, selectedCurrency === 'dolares' && styles.greenIconContainer]}>
-            <Ionicons name="list" size={24} color={Colors.text} />
+            <Ionicons name="list" size={28} color={Colors.text} />
           </View>
           <Text style={styles.actionButtonText}>Movimientos</Text>
         </Pressable>
@@ -127,15 +230,34 @@ const HomeScreen: React.FC = () => {
     </View>
   );
 
-  const renderDollarCard = () => (
-    <Pressable style={[styles.dollarCard, selectedCurrency === 'dolares' && styles.dollarCardActive]}>
-      <View style={styles.dollarCardContent}>
-        <Text style={[styles.dollarCardTitle, selectedCurrency === 'dolares' && styles.dollarCardTitleActive]}>COMPRÁ DÓLARES</Text>
-        <Text style={[styles.dollarCardAmount, selectedCurrency === 'dolares' && styles.dollarCardAmountActive]}>$ 1.265,00</Text>
-      </View>
-      <Ionicons name="chevron-forward" size={20} color={selectedCurrency === 'dolares' ? '#22C55E' : Colors.primary} style={styles.dollarCardIcon} />
-    </Pressable>
-  );
+  const renderDollarCard = () => {
+    const animatedBorderStyle = {
+      borderColor: dollarCardState === 'vender' ? '#22C55E' : '#3A3A3A',
+    };
+
+    return (
+      <Pressable
+        style={[styles.dollarCard, animatedBorderStyle, { overflow: 'hidden' }]}
+      >
+        <Animated.View style={[styles.dollarCardContent, styles.animatedDollarCardItem, comprarDolaresStyle]}>
+          <Text style={styles.dollarCardTitlePurple}>COMPRÁ DÓLARES</Text>
+          <Text style={styles.dollarCardAmountPurple}>$ 1.265,00</Text>
+        </Animated.View>
+
+        <Animated.View style={[styles.dollarCardContent, styles.animatedDollarCardItem, venderDolaresStyle]}>
+          <Text style={styles.dollarCardTitleGreen}>VENDÉ DÓLARES</Text>
+          <Text style={styles.dollarCardAmountGreen}>$ 1.220,00</Text>
+        </Animated.View>
+        
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={dollarCardState === 'vender' ? '#22C55E' : Colors.primary}
+          style={styles.dollarCardIcon}
+        />
+      </Pressable>
+    );
+  };
 
   const renderModoPromo = () => (
     <LinearGradient
@@ -160,7 +282,7 @@ const HomeScreen: React.FC = () => {
       </View>
     </LinearGradient>
   );
-
+  
   const renderServicesSection = () => {
     const getServiceIcon = (iconName: string) => {
       switch (iconName) {
@@ -180,18 +302,25 @@ const HomeScreen: React.FC = () => {
     return (
       <View style={styles.servicesSection}>
         <Text style={styles.sectionTitle}>Paga tus servicios y recargas</Text>
-        <Pressable style={styles.searchServicesButton}>
-          <Text style={styles.searchServicesText}>Buscar empresas</Text>
-        </Pressable>
-        <View style={styles.servicesGrid}>
-          {services.slice(0, 6).map((service) => (
-            <Pressable key={service.id} style={styles.serviceItem}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.servicesScrollContainer}
+        >
+          <Pressable style={styles.serviceItemContainer}>
+             <View style={styles.searchServicesCircleButton}>
+              <Text style={styles.searchServicesCircleButtonText}>Buscar empresas</Text>
+            </View>
+          </Pressable>
+
+          {services.slice(0, 6).map((service: Service) => (
+            <Pressable key={service.id} style={styles.serviceItemContainer}>
               <View style={[styles.serviceIcon, { backgroundColor: getServiceColor(service.name) }]}>
                 {getServiceIcon(service.icon)}
               </View>
             </Pressable>
           ))}
-        </View>
+        </ScrollView>
       </View>
     );
   };
@@ -234,12 +363,12 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.seeAllText}>Ver análisis</Text>
         </Pressable>
       </View>
-      {transactions.slice(0, 3).map((transaction) => (
+      {transactions.slice(0, 3).map((transaction: Transaction) => (
         <View key={transaction.id} style={styles.transactionItem}>
-          <View style={styles.transactionIcon}>
+          <View style={styles.transactionIconContainer}>
             <View style={[
               styles.transactionIconCircle,
-              { backgroundColor: transaction.type === 'income' ? Colors.success : Colors.backgroundCard }
+              { backgroundColor: transaction.type === 'income' ? Colors.success : '#2A2A2A' }
             ]}>
               <Text style={styles.transactionIconText}>
                 {transaction.type === 'income' ? '↗' : transaction.description.includes('Martina') ? 'MS' : '↗'}
@@ -273,10 +402,10 @@ const HomeScreen: React.FC = () => {
         </Pressable>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.promotionsScroll}>
-        {promotions.map((promotion) => (
+        {promotions.map((promotion: Promotion) => (
           <Pressable key={promotion.id} style={styles.promotionItem}>
             <View style={styles.promotionIcon}>
-              <Text style={styles.promotionIconText}>{promotion.title.charAt(0)}</Text>
+              <Text style={styles.promotionIconText}>{promotion.title.substring(0,4).toUpperCase()}</Text>
             </View>
           </Pressable>
         ))}
@@ -506,6 +635,7 @@ const HomeScreen: React.FC = () => {
   );
 };
 
+// CAMBIO: Estilos reestructurados para solucionar el error y mejorar la disposición.
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -539,9 +669,9 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: '#F5E6D3',
     alignItems: 'center',
     justifyContent: 'center',
@@ -554,14 +684,45 @@ const styles = StyleSheet.create({
   dropdownButton: {
     padding: Spacing.xs,
   },
-  searchContainer: {
+  animatedHeaderContent: {
     flex: 1,
+    height: 38,
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  // Wrapper para el nombre de usuario (maneja la posición)
+  userNameWrapper: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+  },
+  // Wrapper para la barra de búsqueda (maneja posición y ancho)
+  searchWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
+  // Elemento animado común (interior)
+  animatedElement: {
+    backgroundColor: '#2A2A2A',
+    borderRadius: 20,
+    paddingHorizontal: Spacing.md,
+    height: '100%',
+    justifyContent: 'center',
+  },
+  userNameText: {
+    color: Colors.text,
+    fontSize: FontSizes.md,
+    fontWeight: FontWeights.medium,
+  },
+  // Estilos específicos para el interior de la barra de búsqueda
+  searchInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2A2A2A',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.lg,
     gap: Spacing.sm,
   },
   searchText: {
@@ -611,30 +772,25 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   actionButton: {
     alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  qrButton: {
-    alignItems: 'center',
+    gap: Spacing.sm,
+    width: '24%',
   },
   qrIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: Colors.text,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  purpleButton: {
-    alignItems: 'center',
-  },
   purpleIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -651,26 +807,41 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
     borderRadius: 20,
-    height: 60,
+    height: 56,
+    borderWidth: 1.5,
+  },
+  animatedDollarCardItem: {
+      position: 'absolute',
+      left: Spacing.lg,
+      right: Spacing.lg + 20,
   },
   dollarCardContent: {
     flex: 1,
+    justifyContent: 'center',
   },
-  dollarCardTitle: {
-    color: '#B794F6',
+  dollarCardTitlePurple: {
     fontSize: FontSizes.sm,
     fontWeight: FontWeights.medium,
-    marginBottom: 2,
+    color: Colors.primary,
   },
-  dollarCardAmount: {
-    color: '#B794F6',
-    fontSize: FontSizes.lg,
+  dollarCardAmountPurple: {
+    fontSize: FontSizes.md,
     fontWeight: FontWeights.bold,
+    color: Colors.primary,
+  },
+  dollarCardTitleGreen: {
+    fontSize: FontSizes.sm,
+    fontWeight: FontWeights.medium,
+    color: '#22C55E',
+  },
+  dollarCardAmountGreen: {
+    fontSize: FontSizes.md,
+    fontWeight: FontWeights.bold,
+    color: '#22C55E',
   },
   dollarCardIcon: {
-    opacity: 0.7,
+    opacity: 0.9,
   },
   modoPromo: {
     marginHorizontal: Spacing.lg,
@@ -723,7 +894,7 @@ const styles = StyleSheet.create({
     fontWeight: FontWeights.bold,
   },
   servicesSection: {
-    paddingHorizontal: Spacing.lg,
+    paddingLeft: Spacing.lg,
     marginBottom: Spacing.lg,
   },
   sectionTitle: {
@@ -732,31 +903,32 @@ const styles = StyleSheet.create({
     fontWeight: FontWeights.semibold,
     marginBottom: Spacing.md,
   },
-  searchServicesButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    alignSelf: 'flex-start',
-    marginBottom: Spacing.md,
-  },
-  searchServicesText: {
-    color: Colors.text,
-    fontSize: FontSizes.md,
-    fontWeight: FontWeights.medium,
-  },
-  servicesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  servicesScrollContainer: {
+    paddingRight: Spacing.lg,
     gap: Spacing.md,
   },
-  serviceItem: {
-    width: '15%',
-    aspectRatio: 1,
+  serviceItemContainer: {
+    alignItems: 'center',
+  },
+  searchServicesCircleButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xs,
+  },
+  searchServicesCircleButtonText: {
+    color: Colors.text,
+    fontSize: 10,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   serviceIcon: {
-    flex: 1,
-    borderRadius: BorderRadius.md,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -812,7 +984,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.md,
   },
-  transactionIcon: {
+  transactionIconContainer: {
     marginRight: Spacing.md,
   },
   transactionIconCircle: {
@@ -821,11 +993,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2A2A2A',
   },
   transactionIconText: {
     color: Colors.text,
-    fontSize: FontSizes.md,
+    fontSize: FontSizes.sm,
     fontWeight: FontWeights.bold,
   },
   transactionDetails: {
@@ -869,8 +1040,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   promotionItem: {
-    width: 60,
-    height: 60,
+    width: 112,
+    height: 64,
     marginRight: Spacing.md,
   },
   promotionIcon: {
@@ -882,13 +1053,12 @@ const styles = StyleSheet.create({
   },
   promotionIconText: {
     color: Colors.text,
-    fontSize: FontSizes.lg,
+    fontSize: FontSizes.sm,
     fontWeight: FontWeights.bold,
   },
   bottomSpacing: {
     height: 100,
   },
-  // Modal styles
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -1044,7 +1214,6 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.sm,
     textAlign: 'center',
   },
-  // Dollar mode styles
   currencyTabActiveDollar: {
     backgroundColor: '#22C55E',
   },
@@ -1062,18 +1231,6 @@ const styles = StyleSheet.create({
   greenIconContainer: {
     backgroundColor: '#22C55E',
   },
-  dollarCardActive: {
-    backgroundColor: '#22C55E',
-    borderWidth: 2,
-    borderColor: '#16A34A',
-  },
-  dollarCardTitleActive: {
-    color: Colors.text,
-  },
-  dollarCardAmountActive: {
-    color: Colors.text,
-  },
-  // CBU Modal styles
   cbuModal: {
     backgroundColor: Colors.background,
     borderTopLeftRadius: 20,
