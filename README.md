@@ -1,22 +1,70 @@
-# Welcome to your Expo app 👋
+# TuBank - Tu Banca Móvil
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![TuBank Logo](https://via.placeholder.com/150x50?text=TuBank)  
+*Tu banco en la palma de tu mano*
 
-## Get started
+## 📱 Acerca de TuBank
 
-1. Install dependencies
+TuBank es una aplicación móvil de banca en línea que te permite gestionar tus finanzas de manera rápida, segura y sencilla. Con TuBank, tienes el control total de tu dinero desde cualquier lugar y en cualquier momento.
 
+### ✨ Características Principales
+
+- 💳 Consulta de saldos y movimientos
+- 🔄 Transferencias entre cuentas propias y a terceros
+- 💰 Pago de servicios y facturas
+- 📊 Control de gastos con categorización automática
+- 🔐 Autenticación biométrica y por PIN
+- 🏦 Sucursales y cajeros cercanos
+- 📱 Interfaz intuitiva y fácil de usar
+
+## 🚀 Comenzando
+
+### Requisitos Previos
+
+- Node.js 16 o superior
+- npm o yarn
+- Expo CLI
+- Dispositivo móvil con Expo Go o emulador
+
+### Instalación
+
+1. Clona el repositorio:
    ```bash
-   npm install
+   git clone https://github.com/tu-usuario/tuBank.git
+   cd tuBank
    ```
 
-2. Start the app
+2. Instala las dependencias:
+   ```bash
+   npm install
+   # o
+   yarn install
+   ```
 
+3. Inicia la aplicación:
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. Escanea el código QR con la aplicación Expo Go (iOS) o la cámara (Android) para abrir la aplicación en tu dispositivo.
+
+## 🛠 Tecnologías Utilizadas
+
+- React Native
+- Expo
+- TypeScript
+- Redux Toolkit
+- React Navigation
+- Styled Components
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+
+
+---
+
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
@@ -35,16 +83,4 @@ npm run reset-project
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
