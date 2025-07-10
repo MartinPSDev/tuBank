@@ -49,7 +49,7 @@ const HomeScreen: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Animación de la Tarjeta de Dólares (simplificada)
+  // Animación de la Tarjeta de Dólares 
   const dollarCardAnim = useRef(new Animated.Value(0)).current;
   // Estado para controlar qué ícono mostrar (sin animar el ícono directamente)
   const [iconColorState, setIconColorState] = useState<'purple' | 'green'>('purple');
