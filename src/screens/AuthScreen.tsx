@@ -1,4 +1,5 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
@@ -9,36 +10,43 @@ import {
   Text,
   View,
 } from 'react-native';
-// Novedad: Importamos iconos más adecuados y un hook para el safe area
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth'; // Asegúrate de que esta ruta sea correcta
 
-// Simulación de tus constantes para que el código sea completo
+// --- CONSTANTES AJUSTADAS PARA COINCIDIR CON LA IMAGEN ---
+
 const Colors = {
-  background: '#1a1a2e', // Un morado oscuro/negro
+  // 1. Fondo más oscuro, casi negro
+  background: '#0D0D0D', 
   text: '#FFFFFF',
   textSecondary: '#a9a9a9',
-  avatarBackground: '#fdf0d5', // Color crema/beige para el avatar
-  avatarText: '#e76f51', // Naranja para el texto del avatar
-  pinDotInactive: '#4a4a6a',
-  gradientStart: '#5a4fcf', // Inicio del gradiente para el botón
-  gradientEnd: '#7b68ee', // Fin del gradiente para el botón
+  // Avatar con colores de la imagen
+  avatarBackground: '#EFEBE0', // Un beige/hueso claro
+  avatarText: '#FFA500', // Naranja/Dorado para el texto del avatar
+  // Puntos del PIN
+  pinDotInactive: '#333333', // Gris oscuro para los puntos inactivos
+  // Botón "Olvidaste clave"
+  forgotButtonBackground: 'rgba(88, 86, 214, 0.15)', // Morado muy sutil y transparente
+  forgotButtonText: '#C3BFFD' // Texto del botón en un lila claro
 };
 
 const Spacing = {
-  md: 12,
+  sm: 8,
+  md: 16,
   lg: 20,
   xl: 24,
   xxl: 32,
+  xxxl: 48, // Nuevo espaciado para mayor separación
 };
 
 const FontSizes = {
-  md: 16,
-  lg: 18,
-  xl: 22,
-  xxl: 32,
+  // 2. Fuentes más pequeñas en general
+  sm: 12,
+  md: 14, // Tamaño general para texto
+  lg: 18, // Para el título principal
+  xl: 20,
+  // 3. Teclado notablemente más pequeño
+  keypad: 26, 
 };
 
 // --- Componente principal de la pantalla ---
@@ -46,9 +54,8 @@ const AuthScreen: React.FC = () => {
   const [pin, setPin] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const { authenticateWithPin, authenticateWithBiometric, hasHardware } = useAuth();
-  const insets = useSafeAreaInsets(); // Hook para obtener los paddings seguros
+  const insets = useSafeAreaInsets();
 
-  // --- Lógica de la UI (sin cambios, ya era correcta) ---
   const handleNumberPress = (number: string) => {
     if (isLoading || pin.length >= 6) return;
     const newPin = pin + number;
@@ -71,7 +78,7 @@ const AuthScreen: React.FC = () => {
         router.replace('/(tabs)');
       } else {
         Alert.alert('Error', 'PIN incorrecto. Inténtalo de nuevo.');
-        setPin(''); // Limpiar PIN en caso de error
+        setPin('');
       }
     } catch (error) {
       Alert.alert('Error', 'Ocurrió un error durante la autenticación.');
@@ -87,18 +94,15 @@ const AuthScreen: React.FC = () => {
       router.replace('/(tabs)');
     }
   };
-
-  // --- Renderizado de Componentes de la UI ---
+  
+  // --- Componentes de UI ---
 
   const PinDots = () => (
     <View style={styles.pinContainer}>
       {Array.from({ length: 6 }).map((_, index) => (
         <View
           key={index}
-          style={[
-            styles.pinDot,
-            index < pin.length && styles.pinDotFilled,
-          ]}
+          style={[styles.pinDot, index < pin.length && styles.pinDotFilled]}
         />
       ))}
     </View>
@@ -106,54 +110,46 @@ const AuthScreen: React.FC = () => {
 
   const NumberPad = () => (
     <View style={styles.numberPad}>
-      {/* Fila 1-3 */}
       {[...Array(3)].map((_, rowIndex) => (
         <View key={rowIndex} style={styles.numberRow}>
           {[...Array(3)].map((_, colIndex) => {
             const number = (rowIndex * 3 + colIndex + 1).toString();
             return (
-              <Pressable
-                key={number}
-                style={styles.numberButton}
-                onPress={() => handleNumberPress(number)}
-                disabled={isLoading}
-              >
+              <Pressable key={number} style={styles.numberButton} onPress={() => handleNumberPress(number)} disabled={isLoading}>
                 <Text style={styles.numberText}>{number}</Text>
               </Pressable>
             );
           })}
         </View>
       ))}
-      {/* Fila 0 y acciones */}
       <View style={styles.numberRow}>
         {hasHardware ? (
           <Pressable style={styles.numberButton} onPress={handleBiometricAuth} disabled={isLoading}>
-            <MaterialIcons name="fingerprint" size={30} color={Colors.textSecondary} />
+            <MaterialIcons name="fingerprint" size={28} color={Colors.textSecondary} />
           </Pressable>
-        ) : <View style={styles.numberButton} /> /* Espacio vacío */}
+        ) : <View style={styles.numberButton} />}
         
         <Pressable style={styles.numberButton} onPress={() => handleNumberPress('0')} disabled={isLoading}>
           <Text style={styles.numberText}>0</Text>
         </Pressable>
         
         <Pressable style={styles.numberButton} onPress={handleDelete} disabled={isLoading || pin.length === 0}>
-          {/* Mejora: Icono de borrar más parecido al de la imagen */}
-          <MaterialCommunityIcons name="backspace-outline" size={28} color={Colors.text} />
+          <MaterialCommunityIcons name="backspace-outline" size={26} color={Colors.text} />
         </Pressable>
       </View>
     </View>
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    // Se usa el padding seguro para evitar el notch y la barra de gestos
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom || Spacing.sm }]}>
       <StatusBar style="light" />
 
-      {/* --- Header: Botón de Cerrar Sesión --- */}
-      <View style={[styles.header, { paddingHorizontal: Spacing.lg }]}>
+      <View style={styles.header}>
         <Text style={styles.closeButton}>Cerrar sesión</Text>
       </View>
 
-      {/* --- Contenido Principal Superior --- */}
+      {/* 4. Layout dividido para empujar el teclado hacia abajo */}
       <View style={styles.topContent}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>MP</Text>
@@ -162,22 +158,13 @@ const AuthScreen: React.FC = () => {
         <PinDots />
       </View>
       
-      {/* --- Contenido Inferior (botones y teclado) --- */}
       <View style={styles.bottomContent}>
         {isLoading ? (
-          <ActivityIndicator size="large" color={Colors.text} style={{flex: 1}}/>
+          <ActivityIndicator size="large" color={Colors.text} style={{ flex: 1 }} />
         ) : (
           <>
-            <Pressable>
-              {/* Novedad: Botón con gradiente y estilo de píldora */}
-              <LinearGradient
-                colors={[Colors.gradientStart, Colors.gradientEnd]}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-                style={styles.forgotButton}
-              >
-                <Text style={styles.forgotText}>¿Olvidaste tu clave?</Text>
-              </LinearGradient>
+            <Pressable style={styles.forgotButton}>
+              <Text style={styles.forgotText}>¿Olvidaste tu clave?</Text>
             </Pressable>
             <NumberPad />
           </>
@@ -187,80 +174,86 @@ const AuthScreen: React.FC = () => {
   );
 };
 
-// --- Estilos completamente re-diseñados para coincidir con la imagen ---
+// --- ESTILOS REFINADOS ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
   },
   header: {
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
+    height: 50,
   },
   closeButton: {
     color: Colors.text,
     fontSize: FontSizes.md,
   },
-  // Mejora: División del layout para posicionar el teclado abajo
+  // Contenido superior que ocupa el espacio disponible para empujar el resto hacia abajo
   topContent: {
-    flex: 1,
+    flex: 1, // ¡Esta es la clave para la separación!
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 40, // Espacio para que no se pegue al botón de "olvidé clave"
   },
+  // Contenido inferior fijo en la parte de abajo
   bottomContent: {
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.md,
   },
   avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    // Avatar más pequeño
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: Colors.avatarBackground,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   avatarText: {
-    fontSize: 34,
+    // Texto del avatar más pequeño
+    fontSize: 24,
     fontWeight: '600',
     color: Colors.avatarText,
   },
   title: {
     fontSize: FontSizes.lg,
     color: Colors.text,
-    marginBottom: Spacing.xxl,
+    marginBottom: Spacing.xxxl, // Más espacio antes de los puntos
   },
   pinContainer: {
     flexDirection: 'row',
-    gap: Spacing.lg,
+    gap: Spacing.md, // Menos espacio entre puntos
   },
   pinDot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    // Puntos más pequeños
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: Colors.pinDotInactive,
   },
   pinDotFilled: {
     backgroundColor: Colors.text,
   },
-  // Novedad: Estilo para el botón con gradiente
+  // Estilo del botón "Olvidaste clave" como en la imagen
   forgotButton: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 50, // Forma de píldora
+    backgroundColor: Colors.forgotButtonBackground,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 50,
     alignSelf: 'center',
-    marginBottom: Spacing.xxl,
+    marginBottom: Spacing.xxxl, // Gran separación antes del teclado
   },
   forgotText: {
-    color: Colors.text,
+    color: Colors.forgotButtonText,
     fontSize: FontSizes.md,
     fontWeight: '500',
   },
-  // Mejora: Estilos del teclado para que los botones sean invisibles
+  // Teclado con más espacio vertical
   numberPad: {
-    gap: Spacing.xl,
+    gap: Spacing.lg, // Espacio entre filas
+    marginBottom: Spacing.md,
   },
   numberRow: {
     flexDirection: 'row',
@@ -268,14 +261,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   numberButton: {
-    width: 80, // Área de toque grande
-    height: 60, // Área de toque grande
+    width: 75,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },
   numberText: {
-    fontSize: FontSizes.xxl,
+    // Fuente del teclado mucho más pequeña
+    fontSize: FontSizes.keypad,
     color: Colors.text,
+    fontWeight: '400', // Un peso más ligero se ve más elegante
   },
 });
 
