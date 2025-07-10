@@ -32,24 +32,38 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
 
 # typescript
 *.tsbuildinfo
 
-app-example
-/venv
-/.venv
-/env
-
-.env
-
-__pycache__/
-*.pyc
-
+# IDE
 .vscode/
 .idea/
 
-dist/
+# OS generated files
+Thumbs.db
+ehthumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Build outputs
 build/
-*.egg-info
-7fa8e300597db09e3262ce27dc2520714e8da42d
+
+# Temporary folders
+tmp/
+temp/
