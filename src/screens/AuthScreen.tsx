@@ -11,12 +11,10 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '../hooks/useAuth'; // Asegúrate de que esta ruta sea correcta
+import { useAuth } from '../hooks/useAuth';
 
-// --- CONSTANTES AJUSTADAS PARA COINCIDIR CON LA IMAGEN ---
 
 const Colors = {
-  // 1. Fondo más oscuro, casi negro
   background: '#0D0D0D', 
   text: '#FFFFFF',
   textSecondary: '#a9a9a9',
@@ -36,16 +34,14 @@ const Spacing = {
   lg: 20,
   xl: 24,
   xxl: 32,
-  xxxl: 48, // Nuevo espaciado para mayor separación
+  xxxl: 48, 
 };
 
 const FontSizes = {
-  // 2. Fuentes más pequeñas en general
   sm: 12,
-  md: 14, // Tamaño general para texto
-  lg: 18, // Para el título principal
+  md: 14, 
+  lg: 18, 
   xl: 20,
-  // 3. Teclado notablemente más pequeño
   keypad: 26, 
 };
 
@@ -174,7 +170,6 @@ const AuthScreen: React.FC = () => {
   );
 };
 
-// --- ESTILOS REFINADOS ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -191,18 +186,15 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontSize: FontSizes.md,
   },
-  // Contenido superior que ocupa el espacio disponible para empujar el resto hacia abajo
   topContent: {
-    flex: 1, // ¡Esta es la clave para la separación!
+    flex: 1, 
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Contenido inferior fijo en la parte de abajo
   bottomContent: {
     paddingHorizontal: Spacing.md,
   },
   avatar: {
-    // Avatar más pequeño
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -212,7 +204,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   avatarText: {
-    // Texto del avatar más pequeño
     fontSize: 24,
     fontWeight: '600',
     color: Colors.avatarText,
@@ -220,14 +211,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSizes.lg,
     color: Colors.text,
-    marginBottom: Spacing.xxxl, // Más espacio antes de los puntos
+    marginBottom: Spacing.xxxl, 
   },
   pinContainer: {
     flexDirection: 'row',
-    gap: Spacing.md, // Menos espacio entre puntos
+    gap: Spacing.md, 
   },
   pinDot: {
-    // Puntos más pequeños
     width: 12,
     height: 12,
     borderRadius: 6,
@@ -236,23 +226,22 @@ const styles = StyleSheet.create({
   pinDotFilled: {
     backgroundColor: Colors.text,
   },
-  // Estilo del botón "Olvidaste clave" como en la imagen
   forgotButton: {
     backgroundColor: Colors.forgotButtonBackground,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 50,
     alignSelf: 'center',
-    marginBottom: Spacing.xxxl, // Gran separación antes del teclado
+    marginBottom: Spacing.xxxl, 
   },
   forgotText: {
     color: Colors.forgotButtonText,
     fontSize: FontSizes.md,
     fontWeight: '500',
   },
-  // Teclado con más espacio vertical
+  
   numberPad: {
-    gap: Spacing.lg, // Espacio entre filas
+    gap: Spacing.lg, 
     marginBottom: Spacing.md,
   },
   numberRow: {
@@ -267,10 +256,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   numberText: {
-    // Fuente del teclado mucho más pequeña
     fontSize: FontSizes.keypad,
     color: Colors.text,
-    fontWeight: '400', // Un peso más ligero se ve más elegante
+    fontWeight: '400', 
   },
 });
 
