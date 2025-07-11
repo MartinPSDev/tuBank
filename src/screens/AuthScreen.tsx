@@ -1,4 +1,6 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
@@ -13,19 +15,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';
 
-
 const Colors = {
   background: '#0D0D0D', 
   text: '#FFFFFF',
   textSecondary: '#a9a9a9',
-  // Avatar con colores de la imagen
-  avatarBackground: '#EFEBE0', // Un beige/hueso claro
-  avatarText: '#FFA500', // Naranja/Dorado para el texto del avatar
-  // Puntos del PIN
-  pinDotInactive: '#333333', // Gris oscuro para los puntos inactivos
-  // Botón "Olvidaste clave"
-  forgotButtonBackground: 'rgba(88, 86, 214, 0.15)', // Morado muy sutil y transparente
-  forgotButtonText: '#C3BFFD' // Texto del botón en un lila claro
+  avatarBackground: '#EFEBE0',
+  avatarText: '#FFA500',
+  pinDotInactive: '#333333',
+  forgotButtonBackground: 'rgba(88, 86, 214, 0.15)',
 };
 
 const Spacing = {
@@ -45,7 +42,6 @@ const FontSizes = {
   keypad: 26, 
 };
 
-// --- Componente principal de la pantalla ---
 const AuthScreen: React.FC = () => {
   const [pin, setPin] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -91,8 +87,6 @@ const AuthScreen: React.FC = () => {
     }
   };
   
-  // --- Componentes de UI ---
-
   const PinDots = () => (
     <View style={styles.pinContainer}>
       {Array.from({ length: 6 }).map((_, index) => (
@@ -137,7 +131,6 @@ const AuthScreen: React.FC = () => {
   );
 
   return (
-    // Se usa el padding seguro para evitar el notch y la barra de gestos
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom || Spacing.sm }]}>
       <StatusBar style="light" />
 
@@ -145,7 +138,6 @@ const AuthScreen: React.FC = () => {
         <Text style={styles.closeButton}>Cerrar sesión</Text>
       </View>
 
-      {/* 4. Layout dividido para empujar el teclado hacia abajo */}
       <View style={styles.topContent}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>MP</Text>
@@ -156,11 +148,27 @@ const AuthScreen: React.FC = () => {
       
       <View style={styles.bottomContent}>
         {isLoading ? (
-          <ActivityIndicator size="large" color={Colors.text} style={{ flex: 1 }} />
+          <ActivityIndicator size="large" color={Colors.text} style={{ flex: 1, paddingBottom: 200 }} />
         ) : (
           <>
-            <Pressable style={styles.forgotButton}>
-              <Text style={styles.forgotText}>¿Olvidaste tu clave?</Text>
+            <Pressable style={[styles.forgotButton, { minWidth: 200 }]}>
+              <MaskedView
+                style={[styles.maskedView, { width: '100%' }]}
+                maskElement={
+                  <Text style={styles.forgotText}>
+                    ¿Olvidaste tu clave?
+                  </Text>
+                }
+              >
+                <LinearGradient
+                  colors={['#8A2BE2', '#FF00FF']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ borderRadius: 50, paddingVertical: 0, paddingHorizontal: 0, width: '100%' }}
+                >
+                  <Text style={[styles.forgotText, { opacity: 0 }]}>¿Olvidaste tu clave?</Text>
+                </LinearGradient>
+              </MaskedView>
             </Pressable>
             <NumberPad />
           </>
@@ -228,18 +236,30 @@ const styles = StyleSheet.create({
   },
   forgotButton: {
     backgroundColor: Colors.forgotButtonBackground,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
     borderRadius: 50,
+    marginBottom: Spacing.xxl,
     alignSelf: 'center',
-    marginBottom: Spacing.xxxl, 
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 200,
+    height: 48,
+  },
+  maskedView: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   forgotText: {
-    color: Colors.forgotButtonText,
     fontSize: FontSizes.md,
     fontWeight: '500',
+    color: 'black',
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 4,
   },
-  
   numberPad: {
     gap: Spacing.lg, 
     marginBottom: Spacing.md,
