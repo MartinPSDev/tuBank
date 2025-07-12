@@ -7,7 +7,6 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simular un splash screen breve y luego redirigir a auth
     const timer = setTimeout(() => {
       setIsLoading(false);
       router.replace('/auth');
@@ -17,7 +16,7 @@ export default function Index() {
   }, []);
 
   if (isLoading) {
-    return null; // O redirigir directamente a la pantalla principal
+    return null; 
   }
 
   return (
