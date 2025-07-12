@@ -19,7 +19,7 @@ const Colors = {
   background: '#0D0D0D', 
   text: '#FFFFFF',
   textSecondary: '#a9a9a9',
-  avatarBackground: '#EFEBE0',
+  avatarBackground: '#F5E6D3',
   avatarText: '#FFA500',
   pinDotInactive: '#333333',
   forgotButtonBackground: 'rgba(88, 86, 214, 0.15)',
@@ -107,7 +107,7 @@ const AuthScreen: React.FC = () => {
             {[...Array(3)].map((_, colIndex) => {
               const number = (rowIndex * 3 + colIndex + 1).toString();
               return (
-                <Pressable key={number} style={styles.numberButton} onPress={() => handleNumberPress(number)} disabled={isLoading}>
+                <Pressable key={number} style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={() => handleNumberPress(number)} disabled={isLoading}>
                   <Text style={styles.numberText}>{number}</Text>
                 </Pressable>
               );
@@ -116,16 +116,16 @@ const AuthScreen: React.FC = () => {
         ))}
         <View style={styles.numberRow}>
           {hasHardware ? (
-            <Pressable style={styles.numberButton} onPress={handleBiometricAuth} disabled={isLoading}>
+            <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={handleBiometricAuth} disabled={isLoading}>
               <MaterialIcons name="fingerprint" size={28} color={Colors.textSecondary} />
             </Pressable>
           ) : <View style={styles.numberButton} />}
           
-          <Pressable style={styles.numberButton} onPress={() => handleNumberPress('0')} disabled={isLoading}>
+          <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={() => handleNumberPress('0')} disabled={isLoading}>
             <Text style={styles.numberText}>0</Text>
           </Pressable>
           
-          <Pressable style={styles.numberButton} onPress={handleDelete} disabled={isLoading || pin.length === 0}>
+          <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={handleDelete} disabled={isLoading || pin.length === 0}>
             <MaterialCommunityIcons name="backspace-outline" size={26} color={Colors.text} />
           </Pressable>
         </View>
@@ -291,6 +291,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 25, 
+    transform: [{ scale: 1 }],
+  },
+  numberButtonPressed: {
+    transform: [{ scale: 1.1 }],
+    opacity: 0.9,
   },
   numberText: {
     fontSize: 22, 
