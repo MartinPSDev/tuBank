@@ -1,17 +1,24 @@
-import React, { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { Colors } from '../src/constants/Colors';
 
 export default function Index() {
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     // Simular un splash screen breve y luego redirigir a auth
     const timer = setTimeout(() => {
+      setIsLoading(false);
       router.replace('/auth');
     }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
+
+  if (isLoading) {
+    return null; // O redirigir directamente a la pantalla principal
+  }
 
   return (
     <View
@@ -22,7 +29,6 @@ export default function Index() {
         backgroundColor: Colors.background,
       }}
     >
-      <ActivityIndicator size="large" color={Colors.primary} />
     </View>
   );
 }

@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Animated,
   Modal,
   Platform,
@@ -12,7 +11,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  View,
+  View
 } from 'react-native';
 import { Colors } from '../constants/Colors';
 import { BorderRadius, FontSizes, Spacing } from '../constants/Layout';
@@ -348,7 +347,7 @@ const HomeScreen: React.FC = () => {
   );
 
   if (isLoading) {
-    return <View style={styles.loadingContainer}><ActivityIndicator size="large" color={Colors.primary} /></View>;
+    return null; // O redirigir directamente al contenido principal
   }
 
   return (

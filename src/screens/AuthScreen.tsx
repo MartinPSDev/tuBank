@@ -5,12 +5,11 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Pressable,
   StyleSheet,
   Text,
-  View,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';
@@ -22,7 +21,7 @@ const Colors = {
   avatarBackground: '#F5E6D3',
   avatarText: '#FFA500',
   pinDotInactive: '#333333',
-  forgotButtonBackground: 'rgba(88, 86, 214, 0.15)',
+  forgotButtonBackground: 'rgba(100, 95, 150, 0.25)',
 };
 
 const Spacing = {
@@ -45,12 +44,11 @@ const FontSizes = {
 
 const AuthScreen: React.FC = () => {
   const [pin, setPin] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
   const { authenticateWithPin, authenticateWithBiometric, hasHardware } = useAuth();
   const insets = useSafeAreaInsets();
 
   const handleNumberPress = (number: string) => {
-    if (isLoading || pin.length >= 6) return;
+    if (pin.length >= 6) return;
     const newPin = pin + number;
     setPin(newPin);
     if (newPin.length === 6) {
@@ -59,12 +57,10 @@ const AuthScreen: React.FC = () => {
   };
 
   const handleDelete = () => {
-    if (isLoading) return;
     setPin(pin.slice(0, -1));
   };
 
   const handlePinSubmit = async (pinToSubmit: string) => {
-    setIsLoading(true);
     try {
       const isValid = await authenticateWithPin(pinToSubmit);
       if (isValid) {
@@ -76,8 +72,6 @@ const AuthScreen: React.FC = () => {
     } catch (error) {
       Alert.alert('Error', 'Ocurrió un error durante la autenticación.');
       setPin('');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -107,7 +101,7 @@ const AuthScreen: React.FC = () => {
             {[...Array(3)].map((_, colIndex) => {
               const number = (rowIndex * 3 + colIndex + 1).toString();
               return (
-                <Pressable key={number} style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={() => handleNumberPress(number)} disabled={isLoading}>
+                <Pressable key={number} style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={() => handleNumberPress(number)}>
                   <Text style={styles.numberText}>{number}</Text>
                 </Pressable>
               );
@@ -116,16 +110,16 @@ const AuthScreen: React.FC = () => {
         ))}
         <View style={styles.numberRow}>
           {hasHardware ? (
-            <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={handleBiometricAuth} disabled={isLoading}>
+            <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={handleBiometricAuth}>
               <MaterialIcons name="fingerprint" size={28} color={Colors.textSecondary} />
             </Pressable>
           ) : <View style={styles.numberButton} />}
           
-          <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={() => handleNumberPress('0')} disabled={isLoading}>
+          <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={() => handleNumberPress('0')}>
             <Text style={styles.numberText}>0</Text>
           </Pressable>
           
-          <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={handleDelete} disabled={isLoading || pin.length === 0}>
+          <Pressable style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]} onPress={handleDelete} disabled={pin.length === 0}>
             <MaterialCommunityIcons name="backspace-outline" size={26} color={Colors.text} />
           </Pressable>
         </View>
@@ -156,32 +150,26 @@ const AuthScreen: React.FC = () => {
       </View>
       
       <View style={styles.bottomContent}>
-        {isLoading ? (
-          <ActivityIndicator size="large" color={Colors.text} style={{ flex: 1, paddingBottom: 200 }} />
-        ) : (
-          <>
-            <Pressable style={styles.forgotButton}>
-              <MaskedView
-                maskElement={
-                  <Text style={styles.forgotText}>
-                    ¿Olvidaste tu clave?
-                  </Text>
-                }
-              >
-                <LinearGradient
-                  colors={['#381B8E', '#381B8E', '#8A2BE2']}
-                  locations={[0, 0.5, 1]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{ borderRadius: 50, paddingVertical: 0, paddingHorizontal: 0, width: '100%' }}
-                >
-                  <Text style={[styles.forgotText, { opacity: 0 }]}>¿Olvidaste tu clave?</Text>
-                </LinearGradient>
-              </MaskedView>
-            </Pressable>
-            <NumberPad />
-          </>
-        )}
+        <Pressable style={styles.forgotButton}>
+          <MaskedView
+            maskElement={
+              <Text style={styles.forgotText}>
+                ¿Olvidaste tu clave?
+              </Text>
+            }
+          >
+            <LinearGradient
+              colors={['#381B8E', '#381B8E', '#8A2BE2']}
+              locations={[0, 0.5, 1]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{ borderRadius: 50, paddingVertical: 0, paddingHorizontal: 0, width: '100%' }}
+            >
+              <Text style={[styles.forgotText, { opacity: 0 }]}>¿Olvidaste tu clave?</Text>
+            </LinearGradient>
+          </MaskedView>
+        </Pressable>
+        <NumberPad />
       </View>
     </View>
   );
