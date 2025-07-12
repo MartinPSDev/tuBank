@@ -233,7 +233,8 @@ const styles = StyleSheet.create({
   },
   pinContainer: {
     flexDirection: 'row',
-    gap: Spacing.md, 
+    gap: Spacing.lg,
+    marginBottom: Spacing.xxl,
   },
   pinDot: {
     width: 12,
