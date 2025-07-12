@@ -154,9 +154,8 @@ const AuthScreen: React.FC = () => {
           <ActivityIndicator size="large" color={Colors.text} style={{ flex: 1, paddingBottom: 200 }} />
         ) : (
           <>
-            <Pressable style={[styles.forgotButton, { minWidth: 200 }]}>
+            <Pressable style={styles.forgotButton}>
               <MaskedView
-                style={[styles.maskedView, { width: '100%' }]}
                 maskElement={
                   <Text style={styles.forgotText}>
                     ¿Olvidaste tu clave?
@@ -164,7 +163,8 @@ const AuthScreen: React.FC = () => {
                 }
               >
                 <LinearGradient
-                  colors={['#8A2BE2', '#FF00FF']}
+                  colors={['#381B8E', '#381B8E', '#8A2BE2']}
+                  locations={[0, 0.5, 1]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={{ borderRadius: 50, paddingVertical: 0, paddingHorizontal: 0, width: '100%' }}
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 200,
-    height: 48,
+    height: 47,
   },
   maskedView: {
     width: '100%',
