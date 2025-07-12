@@ -32,6 +32,7 @@ const Spacing = {
   xl: 24,
   xxl: 32,
   xxxl: 48, 
+  xs: 4,
 };
 
 const FontSizes = {
@@ -99,33 +100,35 @@ const AuthScreen: React.FC = () => {
   );
 
   const NumberPad = () => (
-    <View style={styles.numberPad}>
-      {[...Array(3)].map((_, rowIndex) => (
-        <View key={rowIndex} style={styles.numberRow}>
-          {[...Array(3)].map((_, colIndex) => {
-            const number = (rowIndex * 3 + colIndex + 1).toString();
-            return (
-              <Pressable key={number} style={styles.numberButton} onPress={() => handleNumberPress(number)} disabled={isLoading}>
-                <Text style={styles.numberText}>{number}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      ))}
-      <View style={styles.numberRow}>
-        {hasHardware ? (
-          <Pressable style={styles.numberButton} onPress={handleBiometricAuth} disabled={isLoading}>
-            <MaterialIcons name="fingerprint" size={28} color={Colors.textSecondary} />
+    <View style={styles.keypadContainer}>
+      <View style={styles.numberPad}>
+        {[...Array(3)].map((_, rowIndex) => (
+          <View key={rowIndex} style={styles.numberRow}>
+            {[...Array(3)].map((_, colIndex) => {
+              const number = (rowIndex * 3 + colIndex + 1).toString();
+              return (
+                <Pressable key={number} style={styles.numberButton} onPress={() => handleNumberPress(number)} disabled={isLoading}>
+                  <Text style={styles.numberText}>{number}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        ))}
+        <View style={styles.numberRow}>
+          {hasHardware ? (
+            <Pressable style={styles.numberButton} onPress={handleBiometricAuth} disabled={isLoading}>
+              <MaterialIcons name="fingerprint" size={28} color={Colors.textSecondary} />
+            </Pressable>
+          ) : <View style={styles.numberButton} />}
+          
+          <Pressable style={styles.numberButton} onPress={() => handleNumberPress('0')} disabled={isLoading}>
+            <Text style={styles.numberText}>0</Text>
           </Pressable>
-        ) : <View style={styles.numberButton} />}
-        
-        <Pressable style={styles.numberButton} onPress={() => handleNumberPress('0')} disabled={isLoading}>
-          <Text style={styles.numberText}>0</Text>
-        </Pressable>
-        
-        <Pressable style={styles.numberButton} onPress={handleDelete} disabled={isLoading || pin.length === 0}>
-          <MaterialCommunityIcons name="backspace-outline" size={26} color={Colors.text} />
-        </Pressable>
+          
+          <Pressable style={styles.numberButton} onPress={handleDelete} disabled={isLoading || pin.length === 0}>
+            <MaterialCommunityIcons name="backspace-outline" size={26} color={Colors.text} />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -260,25 +263,31 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     paddingHorizontal: 4,
   },
-  numberPad: {
-    gap: Spacing.lg, 
+  keypadContainer: {
+    alignSelf: 'center',
+    width: '80%', 
     marginBottom: Spacing.md,
+  },
+  numberPad: {
+    gap: Spacing.sm, 
   },
   numberRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: Spacing.xs, 
   },
   numberButton: {
-    width: 75,
-    height: 50,
+    width: 60, 
+    height: 50, 
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 25, 
   },
   numberText: {
-    fontSize: FontSizes.keypad,
+    fontSize: 22, 
     color: Colors.text,
-    fontWeight: '400', 
+    fontWeight: '400',
   },
 });
 
