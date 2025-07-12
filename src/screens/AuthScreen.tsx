@@ -191,9 +191,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.sm,
-    height: 50,
-    flex: 0.5,
+    paddingTop: Spacing.xs,
+    height: 30,
+    flex: 0.2,
   },
   closeButton: {
     color: Colors.text,
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     flex: 2,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: Spacing.xxl,
+    paddingTop: 0,
   },
   bottomContent: {
     flex: 3,
