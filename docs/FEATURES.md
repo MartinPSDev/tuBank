@@ -116,9 +116,4 @@ interface FinancialTransaction {
 }
 ```
 
-## 📅 Próximos Pasos
 
-1. Priorizar las características según el roadmap del producto
-2. Asignar recursos a cada área
-3. Establecer hitos y fechas límite
-4. Implementar monitoreo de progreso
