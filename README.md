@@ -1,74 +1,81 @@
 # TuBank - Tu Banca Móvil
- 
+
 *Tu banco en la palma de tu mano*
 
 ## 📱 Acerca de TuBank
 
 TuBank es una aplicación móvil de banca en línea que te permite gestionar tus finanzas de manera rápida, segura y sencilla. Con TuBank, tienes el control total de tu dinero desde cualquier lugar y en cualquier momento.
 
-### ✨ Características Principales
+## 🏗️ Estructura del Proyecto (Monorepo)
 
-- 💳 Consulta de saldos y movimientos
-- 🔄 Transferencias entre cuentas propias y a terceros
-- 💰 Pago de servicios y facturas
-- 📊 Control de gastos con categorización automática
-- 🔐 Autenticación biométrica y por PIN
-- 🏦 Sucursales y cajeros cercanos
-- 📱 Interfaz intuitiva y fácil de usar
+```
+tubank/
+├── mobile-app/          # Aplicación móvil (React Native/Expo)
+├── backend-api/         # API REST (NestJS)
+├── shared/              # Código compartido
+├── infrastructure/      # Infraestructura como código
+├── docs/               # Documentación
+└── scripts/            # Scripts de automatización
+```
+
+### 📱 Mobile App (`/mobile-app`)
+Aplicación móvil desarrollada con React Native y Expo.
+
+### 🖥️ Backend API (`/backend-api`)
+API REST desarrollada con NestJS que sirve como backend para la aplicación móvil.
+
+### 🤝 Shared (`/shared`)
+Código compartido entre frontend y backend (tipos, constantes, utilidades).
+
+### ☁️ Infrastructure (`/infrastructure`)
+Configuración de infraestructura como código (Terraform, Kubernetes).
 
 ## 🚀 Comenzando
 
 ### Requisitos Previos
-
-- Node.js 16 o superior
-- npm o yarn
-- Expo CLI
-- Dispositivo móvil con Expo Go o emulador
+- Node.js 16+
+- npm 8+
+- Docker (para desarrollo local)
+- Expo CLI (para desarrollo móvil)
 
 ### Instalación
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/tuBank.git
-   cd tuBank
+   git clone https://github.com/tu-usuario/tubank.git
+   cd tubank
    ```
 
-2. Instala las dependencias:
+2. Instala dependencias del frontend:
    ```bash
+   cd mobile-app
    npm install
-   # o
-   yarn install
    ```
 
-3. Inicia la aplicación:
+3. Instala dependencias del backend:
    ```bash
-   npx expo start
+   cd ../backend-api
+   npm install
    ```
 
-4. Escanea el código QR con la aplicación Expo Go (iOS) o la cámara (Android) para abrir la aplicación en tu dispositivo.
+4. Configura las variables de entorno (ver `.env.example` en cada directorio)
 
-## 🛠 Tecnologías Utilizadas
+## 🛠️ Desarrollo
 
-- React Native
-- Expo
-- TypeScript
-- Redux Toolkit
-- React Navigation
-- Styled Components
+### Ejecutar la aplicación móvil (desarrollo)
+```bash
+cd mobile-app
+npm start
+```
+
+### Ejecutar el backend (desarrollo)
+```bash
+cd backend-api
+npm run start:dev
+```
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-
-
----
-
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
+by @M4rt1n_0x1337s
