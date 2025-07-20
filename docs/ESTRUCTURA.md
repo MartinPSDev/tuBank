@@ -62,8 +62,4 @@ tubank/
 4. Implementar las APIs necesarias
 5. Configurar los pipelines de CI/CD
 
-## 📚 Documentación Adicional
 
-- [Guía de Estilo](./STYLE_GUIDE.md)
-- [API Reference](./API_REFERENCE.md)
-- [Guía de Despliegue](./DEPLOYMENT.md)
